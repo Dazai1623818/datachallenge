@@ -36,3 +36,4 @@ for file in os.listdir(directory):
         continue
 
 print(len(tweetlist))
+print("test")
