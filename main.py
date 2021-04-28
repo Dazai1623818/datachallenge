@@ -25,7 +25,6 @@ for file in os.listdir(directory):
                 else:
                     tweetDict = json.loads(line)
                     if 'delete' in tweetDict.keys():
-                        print('test')
                         continue
                     else:
                         tweetlist.append(tweetDict)
