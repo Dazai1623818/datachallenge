@@ -4,7 +4,8 @@ import json
 import pandas as pd
 import numpy as np
 
-
+pd.set_option('display.max_rows', 1000)
+pd.set_option('display.max_columns', 1000)
 
 directory = os.fsencode(r"D:\data")
 dfx = pd.DataFrame([])
@@ -23,7 +24,11 @@ for file in os.listdir(directory):
                     continue
                 else:
                     tweetDict = json.loads(line)
-                    tweetlist.append(tweetDict)
+                    if 'delete' in tweetDict.keys():
+                        print('test')
+                        continue
+                    else:
+                        tweetlist.append(tweetDict)
 
             dfx = dfx.append(pd.DataFrame(tweetlist))
 
