@@ -30,7 +30,7 @@ for file in os.listdir(directory):
                     else:
                         tweetlist.append(tweetDict)
 
-            dfx = dfx.append(pd.DataFrame(tweetlist))
+            dfx = dfx.append((pd.DataFrame(tweetlist)).dropna(subset=["id", "created_at"])
 
             progress = (counter / total_files) * 100
             print(f"{round(progress, 2)}%")
@@ -41,4 +41,16 @@ for file in os.listdir(directory):
         continue
 
 print(len(tweetlist))
-print("test")
+
+# Dropping columns, datetime and new columns
+
+
+dfx.drop(["geo", "coordinates"], axis='columns', inplace=True)
+dfx['created_at'] = pd.to_datetime(dfx['created_at'])
+dfx.set_index(["created_at"], inplace=True)
+
+
+dfx["Month"] = dfx.index.month.fillna(0.0).astype(int)
+dfx["Day"] = dfx.index.day.fillna(0.0).astype(int)
+dfx["DayOfYear"] = dfx.index.dayofyear.fillna(0.0).astype(int)
+dfx["Year"] = dfx.index.year.fillna(0.0).astype(int)
