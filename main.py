@@ -42,9 +42,17 @@ for file in os.listdir(directory):
 print(len(tweetlist))
 
 # Dropping columns, datetime and new columns
+x_dlt = [
+    "geo", "display_text_range", "coordinates",
+    "timestamp_ms", "contributors", "withheld_in_countries",
+    "quote_count", "reply_count", "retweet_count", "favorite_count",
+    ""
 
+]
 
-dfx.drop(["geo", "coordinates", "contributors", "withheld_in_countries"], axis='columns', inplace=True)
+dfx.drop(x_dlt, axis='columns', inplace=True)
+
+#Convert
 dfx['created_at'] = pd.to_datetime(dfx['created_at'])
 dfx.set_index(["created_at"], inplace=True)
 
@@ -55,7 +63,7 @@ dfx["Year"] = dfx.index.year.fillna(0.0).astype(int)
 
 dfu = pd.json_normalize(dfx["user"].values)
 # dlt: Attributes to be deleted
-dlt = [
+users_dlt = [
     'url', "notifications", "follow_request_sent", "following", "lang",
     "time_zone", "utc_offset", "default_profile", "default_profile_image",
     "profile_link_color", "profile_sidebar_border_color", "profile_sidebar_fill_color",
@@ -64,4 +72,4 @@ dlt = [
     "profile_background_image_url_https", "profile_use_background_image", "profile_image_url",
     "profile_image_url_https", "translator_type", "protected", "profile_banner_url"
 ]
-df_users = dfu[(dfu["friends_count"] > 5) & (dfu["default_profile_image"] == False)].drop(dlt, axis=1)
+df_users = dfu[(dfu["friends_count"] > 5) & (dfu["default_profile_image"] == False)].drop(users_dlt, axis=1)
