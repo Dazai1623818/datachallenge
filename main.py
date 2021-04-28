@@ -49,10 +49,20 @@ dfx.drop(["geo", "coordinates", "contributors", "withheld_in_countries"], axis='
 dfx['created_at'] = pd.to_datetime(dfx['created_at'])
 dfx.set_index(["created_at"], inplace=True)
 
-
 dfx["Month"] = dfx.index.month.fillna(0.0).astype(int)
 dfx["Day"] = dfx.index.day.fillna(0.0).astype(int)
 dfx["DayOfYear"] = dfx.index.dayofyear.fillna(0.0).astype(int)
 dfx["Year"] = dfx.index.year.fillna(0.0).astype(int)
 
-df_users = pd.json_normalize(dfx["user"].values)
+dfu = pd.json_normalize(dfx["user"].values)
+# dlt: Attributes to be deleted
+dlt = [
+    'url', "notifications", "follow_request_sent", "following", "lang",
+    "time_zone", "utc_offset", "default_profile", "default_profile_image",
+    "profile_link_color", "profile_sidebar_border_color", "profile_sidebar_fill_color",
+    "profile_text_color", "profile_background_tile", "profile_background_color",
+    "is_translator", "contributors_enabled", "profile_background_image_url",
+    "profile_background_image_url_https", "profile_use_background_image", "profile_image_url",
+    "profile_image_url_https", "translator_type", "protected", "profile_banner_url"
+]
+df_users = dfu[(dfu["friends_count"] > 5) & (dfu["default_profile_image"] == False)].drop(dlt, axis=1)
