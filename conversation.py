@@ -1,3 +1,4 @@
+from main import tweetlist
 counter = 0
 tweet_id = []
 layers = []
