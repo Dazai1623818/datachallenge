@@ -7,37 +7,46 @@ import numpy as np
 pd.set_option('display.max_rows', 1000)
 pd.set_option('display.max_columns', 1000)
 
-directory = os.fsencode(r"D:\data")
-dfx = pd.DataFrame([])
 
-total_files = len([name for name in os.listdir('D:\data')])
-counter = 0
+directory = os.fsencode(r"/work/data")
 
-for file in os.listdir(directory):
-    filename = os.fsdecode(file)
-    if filename.endswith(".json"):
-        counter += 1
-        tweetlist = []
-        with open(r'D:\data\{}'.format(filename)) as f:
-            for line in f:
-                if 'Exceeded connection limit for user' in line:
-                    continue
-                else:
-                    tweetDict = json.loads(line)
-                    if 'delete' in tweetDict.keys():
+
+def main(directory):
+    dfx = pd.DataFrame([])
+    tweetlist = []
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".json"):
+            with open('/work/data/{}'.format(filename)) as f:
+                for line in f:
+                    if "\"text\":\"RT " in line:
+                        continue
+                    elif 'Exceeded connection limit for user' in line:
                         continue
                     else:
-                        tweetlist.append(tweetDict)
+                        tweetDict = json.loads(line)
+                        if 'delete' in tweetDict.keys():
+                            continue
+                        else:
+                            tweetlist.append(tweetDict)
+                            if len(tweetlist) >= 20000:
+                                dfx = dfx.append(pd.DataFrame(tweetlist))
+                                output(dfx)
+                                tweetlist = []
+                                tweetDict = {}
+                                dfx = pd.DataFrame([])
+            continue
 
-            dfx = dfx.append((pd.DataFrame(tweetlist)).dropna(subset=["id", "created_at"]))
+        else:
+            continue
 
-            progress = (counter / total_files) * 100
-            print(f"{round(progress, 2)}%")
-        continue
+    dfx = dfx.append(pd.DataFrame(tweetlist))
+    output(dfx)
 
+    return None
 
-    else:
-        continue
+if __name__ == "__main__":
+    main()
 
 #Convert
 dfx['created_at'] = pd.to_datetime(dfx['created_at'])
